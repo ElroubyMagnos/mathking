@@ -187,7 +187,7 @@
                 Card.style.left = 0;
                 Card.number = i;
                 Card.letter = ['C', 'D', 'H', 'S'][j];
-                Card.src = `/Normal/${i}${Card.letter}.png`;
+                Card.src = `https://elroubymagnos.github.io/mathking/Normal/${i}${Card.letter}.png`;
                 Card.style.width = '75px';
                 Card.style.height = '125px';
                 Card.onclick = function() {
@@ -238,7 +238,7 @@
 
         function FlipCard(Card)
         {
-            Card.src = Card.src.includes(`/Normal/${Card.number}${Card.letter}.png`) ? '/images/back.png' : `/Normal/${Card.number}${Card.letter}.png`;
+            Card.src = Card.src.includes(`https://elroubymagnos.github.io/mathking/Normal/${Card.number}${Card.letter}.png`) ? 'https://elroubymagnos.github.io/mathking/images/back.png' : `https://elroubymagnos.github.io/mathking/Normal/${Card.number}${Card.letter}.png`;
             
             return Card;
         }

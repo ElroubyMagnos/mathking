@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathking</title>
+    <link rel="stylesheet" href="/less/main.css">
+</head>
+<body>
+    
+    <div class="scorepanel">
+        <div id="maindeck">
+
+        </div>
+        <div class="Score">
+            <p style="color: white">Your Score is <span id="playerscore">0</span></p>
+        </div>
+    </div>
+    <div id="handfieldcont">
+        <div id="playerhf">
+        </div>
+        <button onclick="PlayTurn();" class="btn">Play</button>
+
+        <div id="FightField">
+            <div id="computerput">
+
+            </div>
+            <div id="challenge">
+                
+            </div>
+            
+            <div id="playerput">
+
+            </div>
+        </div>
+
+        <div id="computerhf">
+        </div>
+    </div>
+    
+    
+
+    <script src="js/main.js"></script>
+    <script>
+        function BiggestCard(...nal)
+        {
+            var Card = {number: 0, letter: '', Owner: playerput};
+            for (var i = 0; i < nal.length; i++)
+            {
+                if (nal[i].number >= Card.number)
+                {
+                    Card.number = nal[i].number;
+                    Card.letter = nal[i].letter;
+                    Card.Owner = nal[i].Owner;
+                }
+            }
+
+            return Card;
+        }
+
+        function Reset()
+        {
+            playerput.innerHTML = '';
+            computerput.innerHTML = '';
+            challenge.innerHTML = '';
+
+
+            if (playerhf.children.length < 2 || computerhf.children.length < 2)
+            {
+                playerhf.innerHTML = '';
+                computerhf.innerHTML = '';
+
+                DrawCard(playerhf);
+                DrawCard(playerhf);
+                DrawCard(playerhf);
+                DrawCard(playerhf);
+                DrawCard(playerhf);
+
+                FlipCard(DrawCard(computerhf));
+                FlipCard(DrawCard(computerhf));
+                FlipCard(DrawCard(computerhf));
+                FlipCard(DrawCard(computerhf));
+                FlipCard(DrawCard(computerhf));
+            }
+
+
+            DrawCard(challenge);
+        }
+
+        function PlayTurn()
+        {
+            CurrentCard = null;
+
+            if (playerput.children.length === 2)
+            {
+                var firstnum = playerput.children[0];
+                var secondnum = playerput.children[1];
+                if (
+                    firstnum.number + secondnum.number === challenge.children[0].number ||
+                    firstnum.number - secondnum.number === challenge.children[0].number ||
+                    secondnum.number - firstnum.number === challenge.children[0].number
+                )
+                {
+                    if (computerput.children.length > 0 && playerput.children.length > 0)
+                    {
+                        FlipCard(computerput.children[0]);
+                        FlipCard(computerput.children[1]);
+                        var arr = [];
+                        arr.push(playerput.children[0]);
+                        arr.push(playerput.children[1]);
+                        arr.push(computerput.children[0]);
+                        arr.push(computerput.children[1]);
+                        var Big = BiggestCard(arr);
+
+                        if (Big.Owner === playerput)
+                        {
+                            alert('player won');
+                            PlayerWon();
+                        }
+                        else if (Big.Owner === computerput)
+                        {
+                            alert('player lose');
+                            PlayerLose();
+                        }
+                        else
+                        {
+                            alert('Draw');
+                        }
+                    }
+                    else if (playerput.children.length > 0)
+                    {
+                        alert('player won');
+                        PlayerWon();
+                    }
+                    else
+                    {
+                        alert('Draw');
+                        Reset();
+                    }
+
+                    
+                    
+                }
+                else
+                {
+                    firstnum.Owner.appendChild(firstnum);
+                    secondnum.Owner.appendChild(secondnum);
+                }
+            }
+            else if (computerput.children.length === 2)
+            {
+                alert('player lose');
+                PlayerLose();
+            }
+            else
+            {
+                alert('Draw');
+                Reset();
+            }
+
+            function PlayerWon()
+            {
+                PlayerScore.innerText = (+PlayerScore.innerText + +50);
+                Reset();
+            }
+
+            function PlayerLose()
+            {
+                PlayerScore.innerText = (+PlayerScore.innerText - +50);
+                Reset();
+            }
+        }
+
+        var PlayerScore = document.getElementById('playerscore');
+        var CurrentCard = null;
+        var playerput = document.getElementById('playerput');
+        var computerput = document.getElementById('computerput');
+        var challenge = document.getElementById('challenge');
+        var md = document.getElementById('maindeck');
+        for (let i = 1; i <= 13; i++) 
+        {
+            for (let j = 0; j < 4; j++)
+            {
+                var Card = document.createElement('img');
+                Card.style.position = 'absolute';
+                Card.style.top = 0;
+                Card.style.left = 0;
+                Card.number = i;
+                Card.letter = ['C', 'D', 'H', 'S'][j];
+                Card.src = `/Normal/${i}${Card.letter}.png`;
+                Card.style.width = '75px';
+                Card.style.height = '125px';
+                Card.onclick = function() {
+                    if (this.Owner === playerhf)
+                    {
+                        if (CurrentCard !== null)
+                        {
+                            CurrentCard.style.border = 'none';
+                        }
+                        
+                        this.style.border = '5px solid #64CCC5';
+                        this.style.borderRadius = '5px';
+
+                        CurrentCard = this;
+                    }
+                };
+                Card.ondblclick = function() {
+                    if (this.Owner === playerhf)
+                    {
+                        if (playerput.children.length <= 1)
+                        {
+                            playerput.appendChild(this);
+                        }
+                        else
+                        {
+                            playerput.children[0].Owner.appendChild(playerput.children[0]);
+                            playerput.children[0].Owner.appendChild(playerput.children[0]);
+                        }
+                    }
+                };
+                md.appendChild(Card);
+            }
+        }
+
+        var playerhf = document.getElementById('playerhf');
+        DrawCard(playerhf);
+        DrawCard(playerhf);
+        DrawCard(playerhf);
+        DrawCard(playerhf);
+        DrawCard(playerhf);
+
+        var computerhf = document.getElementById('computerhf');
+        FlipCard(DrawCard(computerhf));
+        FlipCard(DrawCard(computerhf));
+        FlipCard(DrawCard(computerhf));
+        FlipCard(DrawCard(computerhf));
+        FlipCard(DrawCard(computerhf));
+
+        function FlipCard(Card)
+        {
+            Card.src = Card.src.includes(`/Normal/${Card.number}${Card.letter}.png`) ? '/images/back.png' : `/Normal/${Card.number}${Card.letter}.png`;
+            
+            return Card;
+        }
+
+        function DrawCard(container)
+        {
+            if (md.children.length > 0)
+            {
+                var CC = md.children[Math.floor(Math.random() * md.children.length)];
+                container.appendChild(CC);
+                for (var i = 0; i < container.children.length; i++)
+                {
+                    container.children[i].style.left = (i) * (CC.width + 42) + 'px';
+                }
+                CC.Owner = container;
+            }
+            else
+            {
+                alert('Game End');
+            }
+            
+
+            return CC;
+        }
+        DrawCard(challenge);
+        function AI()
+        {
+            var Found = false;
+            for (var i = 0; i < computerhf.children.length; i++)
+            {
+                for (var j = 0; j < computerhf.children.length; j++)
+                {
+                    var firstnumber = computerhf.children[i];
+                    var secondnumber = computerhf.children[j];
+                    var cnumber = challenge.children[0];
+                    if (firstnumber !== secondnumber)
+                    {
+                        if (firstnumber.number + secondnumber.number === cnumber.number)
+                        {
+                            PutAICards();
+                            Found = true;
+                            break;
+                        }
+                        else if (firstnumber.number - secondnumber.number === cnumber.number)
+                        {
+                            PutAICards();
+                            Found = true;
+                            break;
+                        }
+                    }
+
+                    function PutAICards()
+                    {
+                        if (computerput.children.length === 0)
+                        {
+                            computerput.appendChild(firstnumber);
+                            computerput.appendChild(secondnumber);
+                        }
+                        else if (computerput.children.length > 0)
+                        {
+                            computerput.children[0].Owner.appendChild(computerput.children[0]);
+                            PutAICards();
+                        }
+                    }
+                }
+
+                if (Found) break;
+            }
+        }
+
+        AI();
+    </script>
+</body>
+</html>
